@@ -1,0 +1,33 @@
+---
+// STEP03：DBプロパティごとにcomponentsフォルダ内に雛形を記述
+import { Post } from '../lib/interfaces.ts'
+// UrlプロパティはReadMoreを参照するとやりやすい
+export interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+---
+
+<div class="url">
+  <a href={post.Url}>{post.Url}</a>
+  {console.log(post.Url)}
+</div>
+
+<style>
+  .url {
+    color: var(--fg);
+  }
+  .url a {
+    color: rgb(55, 53, 47);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 2rem;
+    text-decoration: underline;
+  }
+  @media (max-width: 640px) {
+    .url a {
+      width: 50%;
+    }
+  }
+</style>
