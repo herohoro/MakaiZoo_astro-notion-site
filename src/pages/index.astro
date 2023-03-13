@@ -18,7 +18,10 @@ import Pagination from '../components/Pagination.astro'
 import BlogPostsLink from '../components/BlogPostsLink.astro'
 import BlogTagsLink from '../components/BlogTagsLink.astro'
 import styles from '../styles/blog.module.css'
-
+// STEP03：DBプロパティごとにcomponentsフォルダ内に雛形を記述
+// STEP04：それをここで呼び出して<component名 post={post} />で貼り付ける
+// STEP05：スタイルは該当ファイルに記述されている"import styles from 【ここ】"を参照して追記。無い場合はファイル末尾に<style></style>内で記述されている
+// // 慣れるまでは、スタイルのありかをyarn devから検証画面で見つける方がおすすめです
 const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
   getPosts(NUMBER_OF_POSTS_PER_PAGE),
   getRankedPosts(),

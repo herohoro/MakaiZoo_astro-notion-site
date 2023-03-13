@@ -10,6 +10,7 @@ export interface Post {
   Title: string
   Icon: FileObject | Emoji | null
   Cover: FileObject | null
+  //STEP01:DB プロパティ名 : タイプ→ Notion integration > page > page-properties 参照
   Slug: string
   Date: string
   Tags: SelectProperty[]
