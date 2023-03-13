@@ -861,6 +861,8 @@ function _buildPost(pageObject: responses.PageObject): Post {
     Title: prop.Page.title ? prop.Page.title[0].plain_text : '',
     Icon: icon,
     Cover: cover,
+    // STEP02：DBプロパティ_notion integration > page> page-properties からKey名参照
+    // // prop.DBプロパティ名.key名　※ プロパティの種類によって階層異なります
     Slug: prop.Slug.rich_text ? prop.Slug.rich_text[0].plain_text : '',
     Date: prop.Date.date ? prop.Date.date.start : '',
     Tags: prop.Tags.multi_select ? prop.Tags.multi_select : [],
