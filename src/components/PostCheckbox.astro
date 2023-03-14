@@ -1,0 +1,33 @@
+---
+// STEP03：DBプロパティごとにcomponentsフォルダ内に雛形を記述
+import { Post } from '../lib/interfaces.ts'
+
+export interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+---
+
+<div class="checkbox">
+  <p>{post.Checkbox ? '✅' : '🟩'}</p>
+  <!-- {console.log(post.Checkbox)} -->
+</div>
+
+<style>
+  .checkbox {
+    color: var(--fg);
+  }
+  .checkbox a {
+    color: rgb(55, 53, 47);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 2rem;
+    text-decoration: underline;
+  }
+  @media (max-width: 640px) {
+    .checkbox a {
+      width: 50%;
+    }
+  }
+</style>
