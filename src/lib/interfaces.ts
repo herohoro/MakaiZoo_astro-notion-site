@@ -18,6 +18,7 @@ export interface Post {
   FeaturedImage: FileObject | null
   Rank: number
   Url: string
+  Checkbox: boolean
 }
 
 export interface Block {
