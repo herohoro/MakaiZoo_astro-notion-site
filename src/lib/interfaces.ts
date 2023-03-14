@@ -20,6 +20,7 @@ export interface Post {
   Url: string
   Checkbox: boolean
   Formula: string
+  LastEditedTime: string
 }
 
 export interface Block {
