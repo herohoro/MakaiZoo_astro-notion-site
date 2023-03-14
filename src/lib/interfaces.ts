@@ -19,6 +19,7 @@ export interface Post {
   Rank: number
   Url: string
   Checkbox: boolean
+  Formula: string
 }
 
 export interface Block {

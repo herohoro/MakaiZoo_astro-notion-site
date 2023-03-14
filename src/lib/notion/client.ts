@@ -874,6 +874,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
     Rank: prop.Rank.number ? prop.Rank.number : 0,
     Url: prop.Url.url ? prop.Url.url : '',
     Checkbox: prop.Checkbox.checkbox ? true : false,
+    Formula: prop.Formula.formula.string ? prop.Formula.formula.string : '',
   }
 
   return post
