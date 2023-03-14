@@ -873,6 +873,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
     FeaturedImage: featuredImage,
     Rank: prop.Rank.number ? prop.Rank.number : 0,
     Url: prop.Url.url ? prop.Url.url : '',
+    Checkbox: prop.Checkbox.checkbox ? true : false,
   }
 
   return post

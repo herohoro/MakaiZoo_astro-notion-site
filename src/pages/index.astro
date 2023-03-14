@@ -14,6 +14,7 @@ import PostTitle from '../components/PostTitle.astro'
 import PostFeaturedImage from '../components/PostFeaturedImage.astro'
 import PostExcerpt from '../components/PostExcerpt.astro'
 import PostUrl from '../components/PostUrl.astro'
+import PostCheckbox from '../components/PostCheckbox.astro'
 import ReadMoreLink from '../components/ReadMoreLink.astro'
 import Pagination from '../components/Pagination.astro'
 import BlogPostsLink from '../components/BlogPostsLink.astro'
@@ -44,6 +45,7 @@ const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
             <PostFeaturedImage post={post} />
             <PostExcerpt post={post} />
             <PostUrl post={post} />
+            <PostCheckbox post={post} />
             <ReadMoreLink post={post} />
           </div>
         ))
