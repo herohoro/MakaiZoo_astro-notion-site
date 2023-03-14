@@ -875,6 +875,9 @@ function _buildPost(pageObject: responses.PageObject): Post {
     Url: prop.Url.url ? prop.Url.url : '',
     Checkbox: prop.Checkbox.checkbox ? true : false,
     Formula: prop.Formula.formula.string ? prop.Formula.formula.string : '',
+    LastEditedTime: prop.LastEditedTime.last_edited_time
+      ? prop.LastEditedTime.last_edited_time
+      : '',
   }
 
   return post
