@@ -1,0 +1,37 @@
+---
+// STEP03：DBプロパティごとにcomponentsフォルダ内に雛形を記述
+import { Post } from '../lib/interfaces.ts'
+import { getDateStr } from '../lib/blog-helpers.ts'
+
+export interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+---
+
+<div class="last-edited-time">
+  <p>最終更新日:{getDateStr(post.LastEditedTime)}</p>
+
+  <!-- 日付をそのまま表示すると"2023-03-14T15:01:00.000Z"のようになる -->
+  <!-- 同じ日付を扱っているDateプロパティを参考に、blog-helper > getDateStr関数を通すと整う -->
+  <!-- {console.log(post.LastEditedTime)} -->
+</div>
+
+<style>
+  .last-edited-time {
+    color: var(--fg);
+  }
+  .last-edited-time a {
+    color: rgb(55, 53, 47);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 2rem;
+    text-decoration: underline;
+  }
+  @media (max-width: 640px) {
+    .last-edited-time a {
+      width: 50%;
+    }
+  }
+</style>
