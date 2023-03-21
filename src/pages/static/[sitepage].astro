@@ -40,10 +40,8 @@ if (!post) {
   throw new Error('Post not found. sitepage: ${sitepage}')
 }
 
-const [blocks, allStatics, rankedPosts, recentPosts, tags] = await Promise.all([
+const [blocks, recentPosts, tags] = await Promise.all([
   getAllBlocksByBlockId(post.PageId),
-  getAllStatics(),
-  getRankedPosts(),
   getStatics(10),
   getAllStaticTags(),
 ])
