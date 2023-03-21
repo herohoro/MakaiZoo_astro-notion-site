@@ -44,6 +44,10 @@ if (database.Icon && database.Icon.Type === 'file') {
 }
 
 const asidePaddingTop = coverImageURL ? '200px' : '60px'
+const navItems = [
+  { label: '記事一覧', path: '/posts' },
+  { label: 'サイト一覧', path: '/static' },
+]
 ---
 
 <!DOCTYPE html>
@@ -111,7 +115,19 @@ const asidePaddingTop = coverImageURL ? '200px' : '60px'
                   )
                 }
               </a>
+              <ul class="navigation">
+                {
+                  navItems.map(({ label, path: p }) => (
+                    <li key={label}>
+                      <a href={p} class={p === path ? 'active' : null}>
+                        {label}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
             </h1>
+
             <div class="description">
               {database.Description}
             </div>
