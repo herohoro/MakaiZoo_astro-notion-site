@@ -130,6 +130,10 @@ export const getNavLink = (nav: string) => {
   return pathJoin(BASE_PATH, nav)
 }
 
+export const getStaticLink = (slug: string) => {
+  return pathJoin(BASE_PATH, `/static/${slug}`)
+}
+
 export const getPostLink = (slug: string) => {
   return pathJoin(BASE_PATH, `/posts/${slug}`)
 }
