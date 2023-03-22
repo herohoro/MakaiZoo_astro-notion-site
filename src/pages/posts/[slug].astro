@@ -28,7 +28,9 @@ import styles from '../../styles/blog.module.css'
 
 export async function getStaticPaths() {
   const posts = await getAllPosts()
-  return posts.map((post: interfaces.Post) => ({ params: { slug: post.Slug } }))
+  return posts
+    .filter((post) => post.Dir === 'Posts')
+    .map((post: interfaces.Post) => ({ params: { slug: post.Slug } }))
 }
 
 const { slug } = Astro.params
