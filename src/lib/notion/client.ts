@@ -121,12 +121,29 @@ export async function getStatics(pageSize = 10): Promise<Post[]> {
 
 export async function getPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
-  return allPosts.slice(0, pageSize)
+  return allPosts.filter((post) => post.Dir === 'Posts').slice(0, pageSize)
+}
+
+export async function getMenuStatics(pageSize = 20): Promise<Post[]> {
+  const allPosts = await getAllPosts()
+  return allPosts
+    .filter((post) => post.Dir === 'Site')
+    .filter((post) => !!post.Rank)
+    .sort((a, b) => {
+      if (a.Rank < b.Rank) {
+        return -1
+      } else if (a.Rank === b.Rank) {
+        return 0
+      }
+      return 1
+    })
+    .slice(0, pageSize)
 }
 
 export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts
+    .filter((post) => post.Dir === 'Posts')
     .filter((post) => !!post.Rank)
     .sort((a, b) => {
       if (a.Rank > b.Rank) {
