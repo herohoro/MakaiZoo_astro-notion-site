@@ -27,6 +27,11 @@ export async function getStaticPaths() {
   return posts.map((post: interfaces.Post) => ({
     params: { sitepage: post.Slug },
   }))
+  // console.log(
+  //   posts.map((post: interfaces.Post) => ({
+  //     params: { sitepage: post.Slug },
+  //   }))
+  // )
 }
 
 const { sitepage } = Astro.params

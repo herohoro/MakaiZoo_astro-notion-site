@@ -7,7 +7,7 @@ import PostTags from '../../components/PostTags.astro'
 import PostTitle from '../../components/PostTitle.astro'
 import PostFeaturedImage from '../../components/PostFeaturedImage.astro'
 import PostExcerpt from '../../components/PostExcerpt.astro'
-import ReadMoreLink from '../../components/ReadMoreLink.astro'
+import ReadMoreSiteLink from '../../components/ReadMoreSiteLink.astro'
 
 import BlogPostsLink from '../../components/BlogPostsLink.astro'
 import BlogTagsLink from '../../components/BlogTagsLink.astro'
@@ -34,7 +34,7 @@ const [posts, recentPosts, tags] = await Promise.all([
             <PostTags post={post} />
             <PostFeaturedImage post={post} />
             <PostExcerpt post={post} />
-            <ReadMoreLink post={post} />
+            <ReadMoreSiteLink post={post} />
           </div>
         ))
       )
