@@ -3,8 +3,8 @@ import { getStatics, getAllStaticTags } from '../../lib/notion/client.ts'
 import Layout from '../../layouts/Layout.astro'
 import NoContents from '../../components/NoContents.astro'
 
-import PostTags from '../../components/PostTags.astro'
-import PostTitle from '../../components/PostTitle.astro'
+import PostTagsSite from '../../components/PostTagsSite.astro'
+import PostTitleSite from '../../components/PostTitleSite.astro'
 import PostFeaturedImage from '../../components/PostFeaturedImage.astro'
 import PostExcerpt from '../../components/PostExcerpt.astro'
 import ReadMoreSiteLink from '../../components/ReadMoreSiteLink.astro'
@@ -30,8 +30,8 @@ const [posts, recentPosts, tags] = await Promise.all([
       ) : (
         posts.map((post) => (
           <div class={styles.post} key={post.Slug}>
-            <PostTitle post={post} />
-            <PostTags post={post} />
+            <PostTitleSite post={post} />
+            <PostTagsSite post={post} />
             <PostFeaturedImage post={post} />
             <PostExcerpt post={post} />
             <ReadMoreSiteLink post={post} />

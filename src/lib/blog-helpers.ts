@@ -138,6 +138,10 @@ export const getPostLink = (slug: string) => {
   return pathJoin(BASE_PATH, `/posts/${slug}`)
 }
 
+export const getStaticTagLink = (tag: string) => {
+  return pathJoin(BASE_PATH, `/static/tag/${encodeURIComponent(tag)}`)
+}
+
 export const getTagLink = (tag: string) => {
   return pathJoin(BASE_PATH, `/posts/tag/${encodeURIComponent(tag)}`)
 }
