@@ -1,7 +1,6 @@
 ---
 import * as interfaces from '../../lib/interfaces.ts'
 import {
-  getStatics,
   getAllPosts,
   getStaticBySlug,
   getBlock,
@@ -18,9 +17,10 @@ import Layout from '../../layouts/Layout.astro'
 import PostTags from '../../components/PostTags.astro'
 import PostTitle from '../../components/PostTitle.astro'
 import PostBody from '../../components/PostBody.astro'
-import BlogPostsLink from '../../components/BlogPostsLink.astro'
-import BlogTagsLink from '../../components/BlogTagsLink.astro'
+import SiteStaticsLink from '../../components/SiteStaticsLink.astro'
+import SiteTagsLink from '../../components/SiteTagsLink.astro'
 import styles from '../../styles/blog.module.css'
+import { getMenuStatics } from '../../lib/notion/client'
 
 export async function getStaticPaths() {
   const posts = await getAllPosts()
@@ -29,27 +29,19 @@ export async function getStaticPaths() {
     .map((post: interfaces.Post) => ({
       params: { sitepage: post.Slug },
     }))
-
-  // console.log(
-  //   posts
-  //     .filter((post) => post.Dir === 'Site')
-  //     .map((post: interfaces.Post) => ({
-  //       params: { sitepage: post.Slug },
-  //     }))
-  // )
 }
 
 const { sitepage } = Astro.params
 
 const post = await getStaticBySlug(sitepage)
-console.log(post)
+// console.log(post)
 if (!post) {
   throw new Error('Post not found. sitepage: ${sitepage}')
 }
 
-const [blocks, recentPosts, tags] = await Promise.all([
+const [blocks, menuStatics, tags] = await Promise.all([
   getAllBlocksByBlockId(post.PageId),
-  getStatics(10),
+  getMenuStatics(),
   getAllStaticTags(),
 ])
 
@@ -109,7 +101,7 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
   </div>
 
   <div slot="aside" class="aside">
-    <BlogPostsLink heading="menu" posts={recentPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
+    <SiteStaticsLink heading="menu" posts={menuStatics} />
+    <SiteTagsLink heading="Categories" tags={tags} />
   </div>
 </Layout>
