@@ -114,6 +114,11 @@ export async function getAllPosts(): Promise<Post[]> {
   return postsCache
 }
 
+export async function getHome(): Promise<Post[]> {
+  const allPosts = await getAllPosts()
+  return allPosts.filter((post) => post.Dir === 'Home')
+}
+
 export async function getStatics(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts.filter((post) => post.Dir === 'Site').slice(0, pageSize)

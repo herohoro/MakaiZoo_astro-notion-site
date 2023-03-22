@@ -1,29 +1,36 @@
 ---
 import Layout from '../layouts/Layout.astro'
 
-import { getStatics, getAllStaticTags } from '../lib/notion/client.ts'
+import {
+  getAllStaticTags,
+  getAllBlocksByBlockId,
+  getHome,
+  getMenuStatics,
+} from '../lib/notion/client.ts'
 
-import BlogPostsLink from '../components/BlogPostsLink.astro'
-import BlogTagsLink from '../components/BlogTagsLink.astro'
-
+import SiteStaticsLink from '../components/SiteStaticsLink.astro'
+import SiteTagsLink from '../components/SiteTagsLink.astro'
+import PostBody from '../components/PostBody.astro'
 import styles from '../styles/blog.module.css'
 
-const [recentPosts, tags] = await Promise.all([
-  getStatics(10),
+const pageid = await getHome()
+
+const [blocksHome, menuStatics, tags] = await Promise.all([
+  getAllBlocksByBlockId(pageid[0].PageId),
+  getMenuStatics(),
   getAllStaticTags(),
 ])
 ---
 
-<Layout title="HOME" desctiption="" path="/">
-  <div className={styles.container}>
+<Layout>
+  <div slot="main" class={styles.main}>
     <main>
-      <h2>Home</h2>
-      <p>このページはブログ用とサイト用の親ページです</p>
+      <PostBody blocks={blocksHome} />
     </main>
-    <aside>
-      <BlogPostsLink heading="menu" posts={recentPosts} />
-      <BlogTagsLink heading="Categories" tags={tags} />
-    </aside>
+  </div>
+  <div slot="aside" class={styles.aside}>
+    <SiteStaticsLink heading="menu" posts={menuStatics} />
+    <SiteTagsLink heading="Categories" tags={tags} />
   </div>
 </Layout>
 
@@ -31,31 +38,4 @@ const [recentPosts, tags] = await Promise.all([
   main {
     width: 70%;
   }
-  aside {
-    width: 25%;
-  }
-  /* .container {
-    width: 640px;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  .container > main {
-    margin-bottom: 40px;
-    width: 60%;
-  }
-  .container div:last-child {
-    margin-bottom: 0;
-  }
-
-  .container h2 {
-    margin: 0 0 14px;
-    font-size: 1.4rem;
-    font-weight: 400;
-  }
-
-  .container p {
-    margin: 0.3rem auto;
-    line-height: 2rem;
-  } */
 </style>
