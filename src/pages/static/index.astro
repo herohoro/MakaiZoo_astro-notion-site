@@ -1,5 +1,9 @@
 ---
-import { getStatics, getAllStaticTags } from '../../lib/notion/client.ts'
+import {
+  getStatics,
+  getAllStaticTags,
+  getMenuStatics,
+} from '../../lib/notion/client.ts'
 import Layout from '../../layouts/Layout.astro'
 import NoContents from '../../components/NoContents.astro'
 
@@ -9,15 +13,15 @@ import PostFeaturedImage from '../../components/PostFeaturedImage.astro'
 import PostExcerpt from '../../components/PostExcerpt.astro'
 import ReadMoreSiteLink from '../../components/ReadMoreSiteLink.astro'
 
-import BlogPostsLink from '../../components/BlogPostsLink.astro'
-import BlogTagsLink from '../../components/BlogTagsLink.astro'
+import SiteStaticsLink from '../../components/SiteStaticsLink.astro'
+import SiteTagsLink from '../../components/SiteTagsLink.astro'
 import styles from '../../styles/blog.module.css'
 // STEP04：それをここで呼び出して<component名 post={post} />で貼り付ける
 // STEP05：スタイルは該当ファイルに記述されている"import styles from 【ここ】"を参照して追記。無い場合はファイル末尾に<style></style>内で記述されている
 // // 慣れるまでは、スタイルのありかをyarn devから検証画面で見つける方がおすすめです
-const [posts, recentPosts, tags] = await Promise.all([
+const [posts, menuStatics, tags] = await Promise.all([
   getStatics(10),
-  getStatics(10),
+  getMenuStatics(),
   getAllStaticTags(),
 ])
 ---
@@ -42,7 +46,7 @@ const [posts, recentPosts, tags] = await Promise.all([
   </div>
 
   <div slot="aside" class={styles.aside}>
-    <BlogPostsLink heading="menu" posts={recentPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
+    <SiteStaticsLink heading="menu" posts={menuStatics} />
+    <SiteTagsLink heading="Categories" tags={tags} />
   </div>
 </Layout>
