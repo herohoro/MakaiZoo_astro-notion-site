@@ -21,7 +21,7 @@ export interface Post {
   Checkbox: boolean
   Formula: string
   LastEditedTime: string
-  Static: boolean
+  Dir: string
 }
 
 export interface Block {

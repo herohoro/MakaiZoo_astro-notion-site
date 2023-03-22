@@ -2,7 +2,7 @@
 import * as interfaces from '../../lib/interfaces.ts'
 import {
   getStatics,
-  getAllStatics,
+  getAllPosts,
   getStaticBySlug,
   getBlock,
   getAllStaticTags,
@@ -23,13 +23,15 @@ import BlogTagsLink from '../../components/BlogTagsLink.astro'
 import styles from '../../styles/blog.module.css'
 
 export async function getStaticPaths() {
-  const posts = await getAllStatics()
-  console.log(
-    posts.map((post: interfaces.Post) => ({ params: { sitepage: post.Slug } }))
-  )
+  const posts = await getAllPosts()
   return posts.map((post: interfaces.Post) => ({
     params: { sitepage: post.Slug },
   }))
+  // console.log(
+  //   posts.map((post: interfaces.Post) => ({
+  //     params: { sitepage: post.Slug },
+  //   }))
+  // )
 }
 
 const { sitepage } = Astro.params

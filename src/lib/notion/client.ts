@@ -60,55 +60,6 @@ const client = new Client({
 let postsCache: Post[] | null = null
 let dbCache: Database | null = null
 
-////// 固定ページのみを収集
-export async function getAllStatics(): Promise<Post[]> {
-  if (postsCache !== null) {
-    return Promise.resolve(postsCache)
-  }
-
-  const params: requestParams.QueryDatabase = {
-    database_id: DATABASE_ID,
-    filter: {
-      and: [
-        {
-          property: 'Published',
-          checkbox: {
-            equals: true,
-          },
-        },
-        {
-          property: 'Static',
-          checkbox: {
-            equals: true,
-          },
-        },
-      ],
-    },
-
-    page_size: 10,
-  }
-
-  let results: responses.PageObject[] = []
-  while (true) {
-    const res = (await client.databases.query(
-      params as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    )) as responses.QueryDatabaseResponse
-
-    results = results.concat(res.results)
-
-    if (!res.has_more) {
-      break
-    }
-
-    params['start_cursor'] = res.next_cursor as string
-  }
-
-  postsCache = results
-    .filter((pageObject) => _validPageObject(pageObject))
-    .map((pageObject) => _buildPost(pageObject))
-  return postsCache
-}
-
 export async function getAllPosts(): Promise<Post[]> {
   if (postsCache !== null) {
     return Promise.resolve(postsCache)
@@ -125,12 +76,6 @@ export async function getAllPosts(): Promise<Post[]> {
           },
         },
         {
-          property: 'Static',
-          checkbox: {
-            equals: false,
-          },
-        },
-        {
           property: 'Date',
           date: {
             on_or_before: new Date().toISOString(),
@@ -139,6 +84,7 @@ export async function getAllPosts(): Promise<Post[]> {
       ],
     },
     sorts: [
+      { property: 'Dir', direction: 'descending' },
       {
         property: 'Date',
         direction: 'descending',
@@ -169,8 +115,8 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export async function getStatics(pageSize = 10): Promise<Post[]> {
-  const allStatics = await getAllStatics()
-  return allStatics.slice(0, pageSize)
+  const allPosts = await getAllPosts()
+  return allPosts.filter((post) => post.Dir === 'Site').slice(0, pageSize)
 }
 
 export async function getPosts(pageSize = 10): Promise<Post[]> {
@@ -194,8 +140,12 @@ export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
 }
 
 export async function getStaticBySlug(slug: string): Promise<Post | null> {
-  const allStatics = await getAllStatics()
-  return allStatics.find((post) => post.Slug === slug) || null
+  const allPosts = await getAllPosts()
+  return (
+    allPosts
+      .filter((post) => post.Dir === 'Site')
+      .find((post) => post.Slug === slug) || null
+  )
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -371,10 +321,11 @@ export async function getBlock(blockId: string): Promise<Block> {
 }
 
 export async function getAllStaticTags(): Promise<SelectProperty[]> {
-  const allStatics = await getAllStatics()
+  const allPosts = await getAllPosts()
 
   const tagNames: string[] = []
-  return allStatics
+  return allPosts
+    .filter((post) => post.Dir === 'Site')
     .flatMap((post) => post.Tags)
     .reduce((acc, tag) => {
       if (!tagNames.includes(tag.name)) {
@@ -393,6 +344,7 @@ export async function getAllTags(): Promise<SelectProperty[]> {
 
   const tagNames: string[] = []
   return allPosts
+    .filter((post) => post.Dir === 'Posts')
     .flatMap((post) => post.Tags)
     .reduce((acc, tag) => {
       if (!tagNames.includes(tag.name)) {
@@ -961,7 +913,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
     LastEditedTime: prop.LastEditedTime.last_edited_time
       ? prop.LastEditedTime.last_edited_time
       : '',
-    Static: prop.Static.checkbox ? true : false,
+    Dir: prop.Dir.select ? prop.Dir.select.name : '',
   }
 
   return post
