@@ -212,7 +212,9 @@ export async function getPostsByPage(page: number): Promise<Post[]> {
   const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
   const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
 
-  return allPosts.slice(startIndex, endIndex)
+  return allPosts
+    .filter((post) => post.Dir === 'Posts')
+    .slice(startIndex, endIndex)
 }
 
 // page starts from 1 not 0
@@ -232,22 +234,31 @@ export async function getPostsByTagAndPage(
   const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
   const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
 
-  return posts.slice(startIndex, endIndex)
+  return posts
+    .filter((post) => post.Dir === 'Posts')
+    .slice(startIndex, endIndex)
 }
 
 export async function getNumberOfPages(): Promise<number> {
   const allPosts = await getAllPosts()
   return (
-    Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
-    (allPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
+    Math.floor(
+      allPosts.filter((post) => post.Dir === 'Posts').length /
+        NUMBER_OF_POSTS_PER_PAGE
+    ) +
+    (allPosts.filter((post) => post.Dir === 'Posts').length %
+      NUMBER_OF_POSTS_PER_PAGE >
+    0
+      ? 1
+      : 0)
   )
 }
 
 export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   const allPosts = await getAllPosts()
-  const posts = allPosts.filter((post) =>
-    post.Tags.find((tag) => tag.name === tagName)
-  )
+  const posts = allPosts
+    .filter((post) => post.Dir === 'Posts')
+    .filter((post) => post.Tags.find((tag) => tag.name === tagName))
   return (
     Math.floor(posts.length / NUMBER_OF_POSTS_PER_PAGE) +
     (posts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
