@@ -158,6 +158,19 @@ export async function getPostByPageId(pageId: string): Promise<Post | null> {
   return allPosts.find((post) => post.PageId === pageId) || null
 }
 
+export async function getStaticsByTag(
+  tagName: string,
+  pageSize = 10
+): Promise<Post[]> {
+  if (!tagName) return []
+
+  const allPosts = await getAllPosts()
+  return allPosts
+    .filter((post) => post.Dir === 'Site')
+    .filter((post) => post.Tags.find((tag) => tag.name === tagName))
+    .slice(0, pageSize)
+}
+
 export async function getPostsByTag(
   tagName: string,
   pageSize = 10
@@ -166,6 +179,7 @@ export async function getPostsByTag(
 
   const allPosts = await getAllPosts()
   return allPosts
+    .filter((post) => post.Dir === 'Posts')
     .filter((post) => post.Tags.find((tag) => tag.name === tagName))
     .slice(0, pageSize)
 }
