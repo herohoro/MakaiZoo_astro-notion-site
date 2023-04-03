@@ -1,39 +1,39 @@
 ---
 import * as interfaces from '../../lib/interfaces.ts'
 import {
-  getPosts,
-  getAllPosts,
-  getRankedPosts,
-  getPostBySlug,
-  getPostsByTag,
+  getSubPosts,
+  getAllSubPosts,
+  getRankedSubPosts,
+  getSubPostBySlug,
+  getSubPostsByTag,
   getBlock,
-  getAllTags,
+  getAllSubTags,
   getAllBlocksByBlockId,
   downloadFile,
 } from '../../lib/notion/client.ts'
 import {
-  getPostLink,
+  getSubPostLink,
   filePath,
   extractTargetBlocks,
 } from '../../lib/blog-helpers.ts'
 import Layout from '../../layouts/Layout.astro'
 import PostDate from '../../components/PostDate.astro'
-import PostTags from '../../components/PostTags.astro'
-import PostTitle from '../../components/PostTitle.astro'
+import SubPostTags from '../../components/SubPostTags.astro'
+import SubPostTitle from '../../components/SubPostTitle.astro'
 import PostBody from '../../components/PostBody.astro'
 import PostRelativeLink from '../../components/PostRelativeLink.astro'
-import BlogPostsLink from '../../components/BlogPostsLink.astro'
-import BlogTagsLink from '../../components/BlogTagsLink.astro'
+import BlogSubPostsLink from '../../components/BlogSubPostsLink.astro'
+import BlogSubTagsLink from '../../components/BlogSubTagsLink.astro'
 import styles from '../../styles/blog.module.css'
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts()
+  const posts = await getAllSubPosts()
   return posts.map((post: interfaces.Post) => ({ params: { slug: post.Slug } }))
 }
 
 const { slug } = Astro.params
 
-const post = await getPostBySlug(slug)
+const post = await getSubPostBySlug(slug)
 if (!post) {
   throw new Error('Post not found. slug: ${slug}')
 }
@@ -41,11 +41,11 @@ if (!post) {
 const [blocks, allPosts, rankedPosts, recentPosts, tags, postsHavingSameTag] =
   await Promise.all([
     getAllBlocksByBlockId(post.PageId),
-    getAllPosts(),
-    getRankedPosts(),
-    getPosts(5),
-    getAllTags(),
-    getPostsByTag(post.Tags[0]?.name, 6),
+    getAllSubPosts(),
+    getRankedSubPosts(),
+    getSubPosts(5),
+    getAllSubTags(),
+    getSubPostsByTag(post.Tags[0]?.name, 6),
   ])
 
 const fileAtacchedBlocks = extractTargetBlocks('image', blocks)
@@ -96,16 +96,16 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
 <Layout
   title={post.Title}
   description={post.Excerpt}
-  path={getPostLink(post.Slug)}
+  path={getSubPostLink(post.Slug)}
   ogImage={ogImage}
 >
   <div slot="main" class={styles.main}>
     <div class={styles.post}>
       <PostDate post={post} />
-      <PostTags post={post} />
-      <PostTitle post={post} enableLink={false} />
+      <SubPostTags post={post} />
+      <SubPostTitle post={post} enableLink={false} />
       <PostBody blocks={blocks} />
-      <PostTags post={post} />
+      <SubPostTags post={post} />
 
       <footer>
         <PostRelativeLink prevPost={prevPost} nextPost={nextPost} />
@@ -114,14 +114,14 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
   </div>
 
   <div slot="aside" class="aside">
-    <BlogPostsLink
+    <BlogSubPostsLink
       heading="Posts in the same category"
       posts={postsHavingSameTag.filter(
         (p: interfaces.Post) => p.Slug !== post.Slug
       )}
     />
-    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
-    <BlogPostsLink heading="Latest posts" posts={recentPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
+    <BlogSubPostsLink heading="Recommended" posts={rankedPosts} />
+    <BlogSubPostsLink heading="Latest posts" posts={recentPosts} />
+    <BlogSubTagsLink heading="Categories" tags={tags} />
   </div>
 </Layout>

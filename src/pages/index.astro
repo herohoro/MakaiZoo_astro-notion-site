@@ -1,24 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { HOME_PAGE_ID } from '../server-constants'
 
 import {
-  getAllStaticTags,
   getAllBlocksByBlockId,
-  getHome,
-  getMenuStatics,
+  getRankedPosts,
+  getAllTags,
 } from '../lib/notion/client.ts'
-
-import SiteStaticsLink from '../components/SiteStaticsLink.astro'
-import SiteTagsLink from '../components/SiteTagsLink.astro'
 import PostBody from '../components/PostBody.astro'
+import BlogPostsLink from '../components/BlogPostsLink.astro'
+import BlogTagsLink from '../components/BlogTagsLink.astro'
 import styles from '../styles/blog.module.css'
 
-const pageid = await getHome()
-
-const [blocksHome, menuStatics, tags] = await Promise.all([
-  getAllBlocksByBlockId(pageid[0].PageId),
-  getMenuStatics(),
-  getAllStaticTags(),
+const [blocksHome, rankedPosts, tags] = await Promise.all([
+  getAllBlocksByBlockId(HOME_PAGE_ID),
+  getRankedPosts(),
+  getAllTags(),
 ])
 ---
 
@@ -29,8 +26,8 @@ const [blocksHome, menuStatics, tags] = await Promise.all([
     </main>
   </div>
   <div slot="aside" class={styles.aside}>
-    <SiteStaticsLink heading="menu" posts={menuStatics} />
-    <SiteTagsLink heading="Categories" tags={tags} />
+    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
+    <BlogTagsLink heading="Categories" tags={tags} />
   </div>
 </Layout>
 
