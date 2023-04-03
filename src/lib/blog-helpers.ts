@@ -130,16 +130,16 @@ export const getNavLink = (nav: string) => {
   return pathJoin(BASE_PATH, nav)
 }
 
-export const getStaticLink = (slug: string) => {
-  return pathJoin(BASE_PATH, `/static/${slug}`)
+export const getSubPostLink = (slug: string) => {
+  return pathJoin(BASE_PATH, `/supporters/${slug}`)
 }
 
 export const getPostLink = (slug: string) => {
   return pathJoin(BASE_PATH, `/posts/${slug}`)
 }
 
-export const getStaticTagLink = (tag: string) => {
-  return pathJoin(BASE_PATH, `/static/tag/${encodeURIComponent(tag)}`)
+export const getSubTagLink = (tag: string) => {
+  return pathJoin(BASE_PATH, `/supporters/tag/${encodeURIComponent(tag)}`)
 }
 
 export const getTagLink = (tag: string) => {
