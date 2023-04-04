@@ -15,7 +15,7 @@ import SubPostTitle from '../../../components/SubPostTitle.astro'
 import PostFeaturedImage from '../../../components/PostFeaturedImage.astro'
 import PostExcerpt from '../../../components/PostExcerpt.astro'
 import SubReadMoreLink from '../../../components/SubReadMoreLink.astro'
-import Pagination from '../../../components/Pagination.astro'
+import SubPagination from '../../../components/SubPagination.astro'
 import BlogSubPostsLink from '../../../components/BlogSubPostsLink.astro'
 import BlogSubTagsLink from '../../../components/BlogSubTagsLink.astro'
 import styles from '../../../styles/blog.module.css'
@@ -62,7 +62,7 @@ const currentTag = posts[0].Tags.find((t) => t.name === tag)
     }
 
     <footer>
-      <Pagination tag={tag} currentPage={1} numberOfPages={numberOfPages} />
+      <SubPagination tag={tag} currentPage={1} numberOfPages={numberOfPages} />
     </footer>
   </div>
 

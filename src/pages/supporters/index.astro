@@ -18,7 +18,7 @@ import PostCheckbox from '../../components/PostCheckbox.astro'
 import PostFormula from '../../components/PostFormula.astro'
 import PostLastEditedTime from '../../components/PostLastEditedTime.astro'
 import SubReadMoreLink from '../../components/SubReadMoreLink.astro'
-import Pagination from '../../components/Pagination.astro'
+import SubPagination from '../../components/SubPagination.astro'
 import BlogSubPostsLink from '../../components/BlogSubPostsLink.astro'
 import BlogSubTagsLink from '../../components/BlogSubTagsLink.astro'
 import styles from '../../styles/blog.module.css'
@@ -57,7 +57,7 @@ const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
     }
 
     <footer>
-      <Pagination currentPage={1} numberOfPages={numberOfPages} />
+      <SubPagination currentPage={1} numberOfPages={numberOfPages} />
     </footer>
   </div>
 

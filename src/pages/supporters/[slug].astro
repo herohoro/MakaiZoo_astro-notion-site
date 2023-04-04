@@ -21,7 +21,7 @@ import PostDate from '../../components/PostDate.astro'
 import SubPostTags from '../../components/SubPostTags.astro'
 import SubPostTitle from '../../components/SubPostTitle.astro'
 import PostBody from '../../components/PostBody.astro'
-import PostRelativeLink from '../../components/PostRelativeLink.astro'
+import SubPostRelativeLink from '../../components/SubPostRelativeLink.astro'
 import BlogSubPostsLink from '../../components/BlogSubPostsLink.astro'
 import BlogSubTagsLink from '../../components/BlogSubTagsLink.astro'
 import styles from '../../styles/blog.module.css'
@@ -108,7 +108,7 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
       <SubPostTags post={post} />
 
       <footer>
-        <PostRelativeLink prevPost={prevPost} nextPost={nextPost} />
+        <SubPostRelativeLink prevPost={prevPost} nextPost={nextPost} />
       </footer>
     </div>
   </div>
