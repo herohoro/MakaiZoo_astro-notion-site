@@ -146,6 +146,18 @@ export const getTagLink = (tag: string) => {
   return pathJoin(BASE_PATH, `/posts/tag/${encodeURIComponent(tag)}`)
 }
 
+export const getSubPageLink = (page: number, tag: string) => {
+  if (page === 1) {
+    return tag ? getSubTagLink(tag) : pathJoin(BASE_PATH, '/')
+  }
+  return tag
+    ? pathJoin(
+        BASE_PATH,
+        `/supporters/tag/${encodeURIComponent(tag)}/page/${page.toString()}`
+      )
+    : pathJoin(BASE_PATH, `/supporters/page/${page.toString()}`)
+}
+
 export const getPageLink = (page: number, tag: string) => {
   if (page === 1) {
     return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/')
