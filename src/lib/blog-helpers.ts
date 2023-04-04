@@ -148,7 +148,7 @@ export const getTagLink = (tag: string) => {
 
 export const getSubPageLink = (page: number, tag: string) => {
   if (page === 1) {
-    return tag ? getSubTagLink(tag) : pathJoin(BASE_PATH, '/')
+    return tag ? getSubTagLink(tag) : pathJoin(BASE_PATH, '/supporters')
   }
   return tag
     ? pathJoin(
@@ -160,7 +160,7 @@ export const getSubPageLink = (page: number, tag: string) => {
 
 export const getPageLink = (page: number, tag: string) => {
   if (page === 1) {
-    return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/')
+    return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/posts')
   }
   return tag
     ? pathJoin(
