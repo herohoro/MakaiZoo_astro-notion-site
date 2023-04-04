@@ -1,0 +1,97 @@
+---
+import type { SelectProperty } from '../../../../../lib/interfaces.ts'
+import {
+  getPostsBySubTagAndSubPage,
+  getRankedSubPosts,
+  getAllSubTags,
+  getNumberOfSubPagesBySubTag,
+} from '../../../../../lib/notion/client.ts'
+import Layout from '../../../../../layouts/Layout.astro'
+import NoContents from '../../../../../components/NoContents.astro'
+import PostDate from '../../../../../components/PostDate.astro'
+import SubPostTags from '../../../../../components/SubPostTags.astro'
+import SubPostTitle from '../../../../../components/SubPostTitle.astro'
+import PostFeaturedImage from '../../../../../components/PostFeaturedImage.astro'
+import PostExcerpt from '../../../../../components/PostExcerpt.astro'
+import SubReadMoreLink from '../../../../../components/SubReadMoreLink.astro'
+import SubPagination from '../../../../../components/SubPagination.astro'
+import BlogSubPostsLink from '../../../../../components/BlogSubPostsLink.astro'
+import BlogSubTagsLink from '../../../../../components/BlogSubTagsLink.astro'
+import styles from '../../../../../styles/blog.module.css'
+import '../../../../../styles/notion-color.css'
+
+export async function getStaticPaths() {
+  const allTags = await getAllSubTags()
+
+  let params = []
+
+  await Promise.all(
+    allTags.map((tag: SelectProperty) => {
+      return getNumberOfSubPagesBySubTag(tag.name).then(
+        (numberOfPages: number) => {
+          for (let i = 2; i <= numberOfPages; i++) {
+            params.push({ params: { tag: tag.name, page: i.toString() } })
+          }
+        }
+      )
+    })
+  )
+
+  return params
+}
+
+const { tag, page } = Astro.params
+
+const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
+  getPostsBySubTagAndSubPage(tag, parseInt(page, 10)),
+  getRankedSubPosts(),
+  getAllSubTags(),
+  getNumberOfSubPagesBySubTag(tag),
+])
+
+const currentTag = posts[0].Tags.find((t) => t.name === tag)
+---
+
+<Layout
+  title={`Posts in ${tag} ${page}/${numberOfPages}`}
+  path={`/supporters/tag/${tag}/page/${page}`}
+>
+  <div slot="main" class={styles.main}>
+    <header>
+      <h2>
+        <span class={`tag ${currentTag.color}`}>{tag}</span>
+        {page}/{numberOfPages}
+      </h2>
+    </header>
+
+    {
+      posts.length === 0 ? (
+        <NoContents contents={posts} />
+      ) : (
+        posts.map((post) => (
+          <div class={styles.post} key={post.Slug}>
+            <PostDate post={post} />
+            <SubPostTags post={post} />
+            <SubPostTitle post={post} />
+            <PostFeaturedImage post={post} />
+            <PostExcerpt post={post} />
+            <SubReadMoreLink post={post} />
+          </div>
+        ))
+      )
+    }
+
+    <footer>
+      <SubPagination
+        tag={tag}
+        currentPage={parseInt(page, 10)}
+        numberOfPages={numberOfPages}
+      />
+    </footer>
+  </div>
+
+  <div slot="aside" class={styles.aside}>
+    <BlogSubPostsLink heading="Recommended" posts={rankedPosts} />
+    <BlogSubTagsLink heading="Categories" tags={tags} />
+  </div>
+</Layout>
