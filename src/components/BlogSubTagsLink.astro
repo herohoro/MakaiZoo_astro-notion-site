@@ -1,6 +1,6 @@
 ---
 import type { SelectProperty } from '../lib/interfaces.ts'
-import { getStaticTagLink } from '../lib/blog-helpers.ts'
+import { getSubTagLink } from '../lib/blog-helpers.ts'
 import NoContents from './NoContents.astro'
 import '../styles/notion-color.css'
 
@@ -21,7 +21,7 @@ const { heading, tags } = Astro.props
       <ul>
         {tags.map((tag: SelectProperty) => (
           <li>
-            <a href={getStaticTagLink(tag.name)} class={`tag ${tag.color}`}>
+            <a href={getSubTagLink(tag.name)} class={`tag ${tag.color}`}>
               {tag.name}
             </a>
           </li>

@@ -130,25 +130,37 @@ export const getNavLink = (nav: string) => {
   return pathJoin(BASE_PATH, nav)
 }
 
-export const getStaticLink = (slug: string) => {
-  return pathJoin(BASE_PATH, `/static/${slug}`)
+export const getSubPostLink = (slug: string) => {
+  return pathJoin(BASE_PATH, `/supporters/${slug}`)
 }
 
 export const getPostLink = (slug: string) => {
   return pathJoin(BASE_PATH, `/posts/${slug}`)
 }
 
-export const getStaticTagLink = (tag: string) => {
-  return pathJoin(BASE_PATH, `/static/tag/${encodeURIComponent(tag)}`)
+export const getSubTagLink = (tag: string) => {
+  return pathJoin(BASE_PATH, `/supporters/tag/${encodeURIComponent(tag)}`)
 }
 
 export const getTagLink = (tag: string) => {
   return pathJoin(BASE_PATH, `/posts/tag/${encodeURIComponent(tag)}`)
 }
 
+export const getSubPageLink = (page: number, tag: string) => {
+  if (page === 1) {
+    return tag ? getSubTagLink(tag) : pathJoin(BASE_PATH, '/supporters')
+  }
+  return tag
+    ? pathJoin(
+        BASE_PATH,
+        `/supporters/tag/${encodeURIComponent(tag)}/page/${page.toString()}`
+      )
+    : pathJoin(BASE_PATH, `/supporters/page/${page.toString()}`)
+}
+
 export const getPageLink = (page: number, tag: string) => {
   if (page === 1) {
-    return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/')
+    return tag ? getTagLink(tag) : pathJoin(BASE_PATH, '/posts')
   }
   return tag
     ? pathJoin(

@@ -1,6 +1,6 @@
 ---
 import { Post } from '../lib/interfaces.ts'
-import { getStaticLink } from '../lib/blog-helpers.ts'
+import { getSubPostLink } from '../lib/blog-helpers.ts'
 import NoContents from './NoContents.astro'
 
 export interface Props {
@@ -20,7 +20,7 @@ const { heading, posts } = Astro.props
       <ul>
         {posts.map((post: Post) => (
           <li>
-            <a href={getStaticLink(post.Slug)}>
+            <a href={getSubPostLink(post.Slug)}>
               {post.Icon && post.Icon.Type === 'emoji' ? (
                 <>
                   <span>{post.Icon.Emoji}</span>

@@ -1,6 +1,6 @@
 ---
 import type { Post, SelectProperty } from '../lib/interfaces.ts'
-import { getStaticTagLink } from '../lib/blog-helpers.ts'
+import { getSubTagLink } from '../lib/blog-helpers.ts'
 import '../styles/notion-color.css'
 
 export interface Props {
@@ -18,7 +18,7 @@ const { post, enableLink = true } = Astro.props
       post.Tags.map((tag: SelectProperty) => {
         if (enableLink) {
           return (
-            <a href={getStaticTagLink(tag.name)} class={`tag ${tag.color}`}>
+            <a href={getSubTagLink(tag.name)} class={`tag ${tag.color}`}>
               {tag.name}
             </a>
           )

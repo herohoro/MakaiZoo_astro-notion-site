@@ -47,7 +47,7 @@ const asidePaddingTop = coverImageURL ? '200px' : '60px'
 const navItems = [
   { label: 'ホーム', path: '/' },
   { label: '記事一覧', path: '/posts' },
-  { label: 'サイト一覧', path: '/static' },
+  { label: 'サポーター一覧', path: '/supporters' },
 ]
 ---
 
@@ -116,17 +116,6 @@ const navItems = [
                   )
                 }
               </a>
-              <ul class="navigation">
-                {
-                  navItems.map(({ label, path: p }) => (
-                    <li key={label}>
-                      <a href={p} class={p === path ? 'active' : null}>
-                        {label}
-                      </a>
-                    </li>
-                  ))
-                }
-              </ul>
             </h1>
 
             <div class="description">
@@ -148,6 +137,17 @@ const navItems = [
       </main>
 
       <aside>
+        <ul class="navigation" style={'margin:0 0 30px;'}>
+          {
+            navItems.map(({ label, path: p }) => (
+              <li key={label}>
+                <a href={p} class={p === path ? 'active' : null}>
+                  {label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
         <slot name="aside" />
       </aside>
     </div>

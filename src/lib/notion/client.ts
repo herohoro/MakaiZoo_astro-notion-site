@@ -5,6 +5,7 @@ import fetch, { Response, AbortError } from 'node-fetch'
 import {
   NOTION_API_SECRET,
   DATABASE_ID,
+  SUB_DATABASE_ID,
   NUMBER_OF_POSTS_PER_PAGE,
   REQUEST_TIMEOUT_MS,
 } from '../../server-constants'
@@ -13,6 +14,7 @@ import type * as requestParams from './request-params'
 import type {
   Database,
   Post,
+  SubPost,
   Block,
   Paragraph,
   Heading1,
@@ -59,6 +61,7 @@ const client = new Client({
 
 let postsCache: Post[] | null = null
 let dbCache: Database | null = null
+let subPostsCache: SubPost[] | null = null
 
 export async function getAllPosts(): Promise<Post[]> {
   if (postsCache !== null) {
@@ -84,7 +87,6 @@ export async function getAllPosts(): Promise<Post[]> {
       ],
     },
     sorts: [
-      { property: 'Dir', direction: 'descending' },
       {
         property: 'Date',
         direction: 'descending',
@@ -114,41 +116,72 @@ export async function getAllPosts(): Promise<Post[]> {
   return postsCache
 }
 
-export async function getHome(): Promise<Post[]> {
-  const allPosts = await getAllPosts()
-  return allPosts.filter((post) => post.Dir === 'Home')
-}
+export async function getAllSubPosts(): Promise<SubPost[]> {
+  if (subPostsCache !== null) {
+    return Promise.resolve(subPostsCache)
+  }
 
-export async function getStatics(pageSize = 10): Promise<Post[]> {
-  const allPosts = await getAllPosts()
-  return allPosts.filter((post) => post.Dir === 'Site').slice(0, pageSize)
+  const params: requestParams.QueryDatabase = {
+    database_id: SUB_DATABASE_ID,
+    filter: {
+      and: [
+        {
+          property: 'Published',
+          checkbox: {
+            equals: true,
+          },
+        },
+        {
+          property: 'Date',
+          date: {
+            on_or_before: new Date().toISOString(),
+          },
+        },
+      ],
+    },
+    sorts: [
+      {
+        property: 'Date',
+        direction: 'descending',
+      },
+    ],
+    page_size: 100,
+  }
+
+  let results: responses.PageObject[] = []
+  while (true) {
+    const res = (await client.databases.query(
+      params as any // eslint-disable-line @typescript-eslint/no-explicit-any
+    )) as responses.QueryDatabaseResponse
+
+    results = results.concat(res.results)
+
+    if (!res.has_more) {
+      break
+    }
+
+    params['start_cursor'] = res.next_cursor as string
+  }
+
+  subPostsCache = results
+    .filter((pageObject) => _validPageObject(pageObject))
+    .map((pageObject) => _buildSubPost(pageObject))
+  return subPostsCache
 }
 
 export async function getPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
-  return allPosts.filter((post) => post.Dir === 'Posts').slice(0, pageSize)
+  return allPosts.slice(0, pageSize)
 }
 
-export async function getMenuStatics(pageSize = 20): Promise<Post[]> {
-  const allPosts = await getAllPosts()
-  return allPosts
-    .filter((post) => post.Dir === 'Site')
-    .filter((post) => !!post.Rank)
-    .sort((a, b) => {
-      if (a.Rank < b.Rank) {
-        return -1
-      } else if (a.Rank === b.Rank) {
-        return 0
-      }
-      return 1
-    })
-    .slice(0, pageSize)
+export async function getSubPosts(pageSize = 10): Promise<SubPost[]> {
+  const allSubPosts = await getAllSubPosts()
+  return allSubPosts.slice(0, pageSize)
 }
 
 export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts
-    .filter((post) => post.Dir === 'Posts')
     .filter((post) => !!post.Rank)
     .sort((a, b) => {
       if (a.Rank > b.Rank) {
@@ -161,13 +194,19 @@ export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
     .slice(0, pageSize)
 }
 
-export async function getStaticBySlug(slug: string): Promise<Post | null> {
-  const allPosts = await getAllPosts()
-  return (
-    allPosts
-      .filter((post) => post.Dir === 'Site')
-      .find((post) => post.Slug === slug) || null
-  )
+export async function getRankedSubPosts(pageSize = 10): Promise<SubPost[]> {
+  const allSubPosts = await getAllSubPosts()
+  return allSubPosts
+    .filter((subPost) => !!subPost.Rank)
+    .sort((a, b) => {
+      if (a.Rank > b.Rank) {
+        return -1
+      } else if (a.Rank === b.Rank) {
+        return 0
+      }
+      return 1
+    })
+    .slice(0, pageSize)
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -175,22 +214,21 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   return allPosts.find((post) => post.Slug === slug) || null
 }
 
+export async function getSubPostBySlug(slug: string): Promise<SubPost | null> {
+  const allSubPosts = await getAllSubPosts()
+  return allSubPosts.find((subPost) => subPost.Slug === slug) || null
+}
+
 export async function getPostByPageId(pageId: string): Promise<Post | null> {
   const allPosts = await getAllPosts()
   return allPosts.find((post) => post.PageId === pageId) || null
 }
 
-export async function getStaticsByTag(
-  tagName: string,
-  pageSize = 10
-): Promise<Post[]> {
-  if (!tagName) return []
-
-  const allPosts = await getAllPosts()
-  return allPosts
-    .filter((post) => post.Dir === 'Site')
-    .filter((post) => post.Tags.find((tag) => tag.name === tagName))
-    .slice(0, pageSize)
+export async function getSubPostByPageId(
+  pageId: string
+): Promise<SubPost | null> {
+  const allSubPosts = await getAllSubPosts()
+  return allSubPosts.find((subPost) => subPost.PageId === pageId) || null
 }
 
 export async function getPostsByTag(
@@ -201,8 +239,19 @@ export async function getPostsByTag(
 
   const allPosts = await getAllPosts()
   return allPosts
-    .filter((post) => post.Dir === 'Posts')
     .filter((post) => post.Tags.find((tag) => tag.name === tagName))
+    .slice(0, pageSize)
+}
+
+export async function getSubPostsByTag(
+  tagName: string,
+  pageSize = 10
+): Promise<SubPost[]> {
+  if (!tagName) return []
+
+  const allSubPosts = await getAllSubPosts()
+  return allSubPosts
+    .filter((subPost) => subPost.Tags.find((tag) => tag.name === tagName))
     .slice(0, pageSize)
 }
 
@@ -217,9 +266,21 @@ export async function getPostsByPage(page: number): Promise<Post[]> {
   const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
   const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
 
-  return allPosts
-    .filter((post) => post.Dir === 'Posts')
-    .slice(startIndex, endIndex)
+  return allPosts.slice(startIndex, endIndex)
+}
+
+// page starts from 1 not 0
+export async function getSubPostsBySubPage(page: number): Promise<SubPost[]> {
+  if (page < 1) {
+    return []
+  }
+
+  const allSubPosts = await getAllSubPosts()
+
+  const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
+  const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
+
+  return allSubPosts.slice(startIndex, endIndex)
 }
 
 // page starts from 1 not 0
@@ -239,34 +300,66 @@ export async function getPostsByTagAndPage(
   const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
   const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
 
-  return posts
-    .filter((post) => post.Dir === 'Posts')
-    .slice(startIndex, endIndex)
+  return posts.slice(startIndex, endIndex)
+}
+
+// page starts from 1 not 0
+export async function getPostsBySubTagAndSubPage(
+  tagName: string,
+  page: number
+): Promise<SubPost[]> {
+  if (page < 1) {
+    return []
+  }
+
+  const allSubPosts = await getAllSubPosts()
+  const subPosts = allSubPosts.filter((subPost) =>
+    subPost.Tags.find((tag) => tag.name === tagName)
+  )
+
+  const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
+  const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
+
+  return subPosts.slice(startIndex, endIndex)
 }
 
 export async function getNumberOfPages(): Promise<number> {
   const allPosts = await getAllPosts()
   return (
-    Math.floor(
-      allPosts.filter((post) => post.Dir === 'Posts').length /
-        NUMBER_OF_POSTS_PER_PAGE
-    ) +
-    (allPosts.filter((post) => post.Dir === 'Posts').length %
-      NUMBER_OF_POSTS_PER_PAGE >
-    0
-      ? 1
-      : 0)
+    Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
+    (allPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
+  )
+}
+
+export async function getNumberOfSubPages(): Promise<number> {
+  const allSubPosts = await getAllSubPosts()
+  return (
+    Math.floor(allSubPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
+    (allSubPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
   )
 }
 
 export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   const allPosts = await getAllPosts()
-  const posts = allPosts
-    .filter((post) => post.Dir === 'Posts')
-    .filter((post) => post.Tags.find((tag) => tag.name === tagName))
+  const posts = allPosts.filter((post) =>
+    post.Tags.find((tag) => tag.name === tagName)
+  )
   return (
     Math.floor(posts.length / NUMBER_OF_POSTS_PER_PAGE) +
     (posts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
+  )
+}
+
+export async function getNumberOfSubPagesBySubTag(
+  tagName: string
+): Promise<number> {
+  const allSubPosts = await getAllSubPosts()
+  const subPosts = allSubPosts.filter((subPost) =>
+    subPost.Tags.find((subTag) => subTag.name === tagName)
+  )
+  return (
+    Math.floor(subPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
+    (subPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
   )
 }
 
@@ -367,12 +460,11 @@ export async function getBlock(blockId: string): Promise<Block> {
   return _buildBlock(res)
 }
 
-export async function getAllStaticTags(): Promise<SelectProperty[]> {
+export async function getAllTags(): Promise<SelectProperty[]> {
   const allPosts = await getAllPosts()
 
   const tagNames: string[] = []
   return allPosts
-    .filter((post) => post.Dir === 'Site')
     .flatMap((post) => post.Tags)
     .reduce((acc, tag) => {
       if (!tagNames.includes(tag.name)) {
@@ -386,13 +478,12 @@ export async function getAllStaticTags(): Promise<SelectProperty[]> {
     )
 }
 
-export async function getAllTags(): Promise<SelectProperty[]> {
-  const allPosts = await getAllPosts()
+export async function getAllSubTags(): Promise<SelectProperty[]> {
+  const allSubPosts = await getAllSubPosts()
 
   const tagNames: string[] = []
-  return allPosts
-    .filter((post) => post.Dir === 'Posts')
-    .flatMap((post) => post.Tags)
+  return allSubPosts
+    .flatMap((subPost) => subPost.Tags)
     .reduce((acc, tag) => {
       if (!tagNames.includes(tag.name)) {
         acc.push(tag)
@@ -954,16 +1045,78 @@ function _buildPost(pageObject: responses.PageObject): Post {
         : '',
     FeaturedImage: featuredImage,
     Rank: prop.Rank.number ? prop.Rank.number : 0,
+  }
+
+  return post
+}
+
+function _buildSubPost(pageObject: responses.PageObject): SubPost {
+  const prop = pageObject.properties
+
+  let icon: FileObject | Emoji | null = null
+  if (pageObject.icon) {
+    if (pageObject.icon.type === 'emoji' && 'emoji' in pageObject.icon) {
+      icon = {
+        Type: pageObject.icon.type,
+        Emoji: pageObject.icon.emoji,
+      }
+    } else if (
+      pageObject.icon.type === 'external' &&
+      'external' in pageObject.icon
+    ) {
+      icon = {
+        Type: pageObject.icon.type,
+        Url: pageObject.icon.external?.url || '',
+      }
+    }
+  }
+
+  let cover: FileObject | null = null
+  if (pageObject.cover) {
+    cover = {
+      Type: pageObject.cover.type,
+      Url: pageObject.cover.external?.url || '',
+    }
+  }
+
+  let featuredImage: FileObject | null = null
+  if (
+    prop.FeaturedImage.files &&
+    prop.FeaturedImage.files.length > 0 &&
+    prop.FeaturedImage.files[0].file
+  ) {
+    featuredImage = {
+      Type: prop.FeaturedImage.type,
+      Url: prop.FeaturedImage.files[0].file.url,
+      ExpiryTime: prop.FeaturedImage.files[0].file.expiry_time,
+    }
+  }
+
+  const subPost: SubPost = {
+    PageId: pageObject.id,
+    Title: prop.Page.title ? prop.Page.title[0].plain_text : '',
+    Icon: icon,
+    Cover: cover,
+    // STEP02：DBプロパティ_notion integration > page> page-properties からKey名参照
+    // // prop.DBプロパティ名.key名　※ プロパティの種類によって階層異なります
+    Slug: prop.Slug.rich_text ? prop.Slug.rich_text[0].plain_text : '',
+    Date: prop.Date.date ? prop.Date.date.start : '',
+    Tags: prop.Tags.multi_select ? prop.Tags.multi_select : [],
+    Excerpt:
+      prop.Excerpt.rich_text && prop.Excerpt.rich_text.length > 0
+        ? prop.Excerpt.rich_text.map((t) => t.plain_text).join('')
+        : '',
+    FeaturedImage: featuredImage,
+    Rank: prop.Rank.number ? prop.Rank.number : 0,
     Url: prop.Url.url ? prop.Url.url : '',
     Checkbox: prop.Checkbox.checkbox ? true : false,
     Formula: prop.Formula.formula.string ? prop.Formula.formula.string : '',
     LastEditedTime: prop.LastEditedTime.last_edited_time
       ? prop.LastEditedTime.last_edited_time
       : '',
-    Dir: prop.Dir.select ? prop.Dir.select.name : '',
   }
 
-  return post
+  return subPost
 }
 
 function _buildRichText(richTextObject: responses.RichTextObject): RichText {

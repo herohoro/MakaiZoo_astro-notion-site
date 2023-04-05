@@ -1,7 +1,7 @@
 ---
 import { Post } from '../lib/interfaces.ts'
-import { getPostLink } from '../lib/blog-helpers.ts'
-import PostTags from './PostTags.astro'
+import { getSubPostLink } from '../lib/blog-helpers.ts'
+import SubPostTags from './SubPostTags.astro'
 
 export interface Props {
   prevPost: Post
@@ -15,10 +15,10 @@ const { prevPost, nextPost } = Astro.props
   <div>
     {
       nextPost && (
-        <a href={getPostLink(nextPost.Slug)} class="colored">
+        <a href={getSubPostLink(nextPost.Slug)} class="colored">
           <div>◀︎ Next</div>
           <div>{nextPost.Title}</div>
-          <PostTags post={nextPost} enableLink={false} />
+          <SubPostTags post={nextPost} enableLink={false} />
         </a>
       )
     }
@@ -26,10 +26,10 @@ const { prevPost, nextPost } = Astro.props
   <div>
     {
       prevPost && (
-        <a href={getPostLink(prevPost.Slug)} class="colored">
+        <a href={getSubPostLink(prevPost.Slug)} class="colored">
           <div>▶︎ Previous</div>
           <div>{prevPost.Title}</div>
-          <PostTags post={prevPost} enableLink={false} />
+          <SubPostTags post={prevPost} enableLink={false} />
         </a>
       )
     }

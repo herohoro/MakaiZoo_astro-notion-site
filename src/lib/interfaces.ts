@@ -17,11 +17,24 @@ export interface Post {
   Excerpt: string
   FeaturedImage: FileObject | null
   Rank: number
+}
+
+export interface SubPost {
+  PageId: string
+  Title: string
+  Icon: FileObject | Emoji | null
+  Cover: FileObject | null
+  //STEP01:DB プロパティ名 : タイプ→ Notion integration > page > page-properties 参照
+  Slug: string
+  Date: string
+  Tags: SelectProperty[]
+  Excerpt: string
+  FeaturedImage: FileObject | null
+  Rank: number
   Url: string
   Checkbox: boolean
   Formula: string
   LastEditedTime: string
-  Dir: string
 }
 
 export interface Block {

@@ -1,6 +1,6 @@
 ---
 import { Post } from '../lib/interfaces.ts'
-import { getStaticLink } from '../lib/blog-helpers.ts'
+import { getSubPostLink } from '../lib/blog-helpers.ts'
 
 export interface Props {
   post: Post
@@ -10,7 +10,7 @@ const { post } = Astro.props
 ---
 
 <div class="read-more-link">
-  <a href={getStaticLink(post.Slug)}>→Read more</a>
+  <a href={getSubPostLink(post.Slug)}>→Read more</a>
 </div>
 
 <style>

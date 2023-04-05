@@ -1,31 +1,35 @@
 ---
 import { NUMBER_OF_POSTS_PER_PAGE } from '../../server-constants.ts'
 import {
-  getPosts,
-  getRankedPosts,
-  getAllTags,
-  getNumberOfPages,
+  getSubPosts,
+  getRankedSubPosts,
+  getAllSubTags,
+  getNumberOfSubPages,
 } from '../../lib/notion/client.ts'
 import Layout from '../../layouts/Layout.astro'
 import NoContents from '../../components/NoContents.astro'
 import PostDate from '../../components/PostDate.astro'
-import PostTags from '../../components/PostTags.astro'
-import PostTitle from '../../components/PostTitle.astro'
+import SubPostTags from '../../components/SubPostTags.astro'
+import SubPostTitle from '../../components/SubPostTitle.astro'
 import PostFeaturedImage from '../../components/PostFeaturedImage.astro'
 import PostExcerpt from '../../components/PostExcerpt.astro'
-import ReadMoreLink from '../../components/ReadMoreLink.astro'
-import Pagination from '../../components/Pagination.astro'
-import BlogPostsLink from '../../components/BlogPostsLink.astro'
-import BlogTagsLink from '../../components/BlogTagsLink.astro'
+import PostUrl from '../../components/PostUrl.astro'
+import PostCheckbox from '../../components/PostCheckbox.astro'
+import PostFormula from '../../components/PostFormula.astro'
+import PostLastEditedTime from '../../components/PostLastEditedTime.astro'
+import SubReadMoreLink from '../../components/SubReadMoreLink.astro'
+import SubPagination from '../../components/SubPagination.astro'
+import BlogSubPostsLink from '../../components/BlogSubPostsLink.astro'
+import BlogSubTagsLink from '../../components/BlogSubTagsLink.astro'
 import styles from '../../styles/blog.module.css'
 // STEP04：それをここで呼び出して<component名 post={post} />で貼り付ける
 // STEP05：スタイルは該当ファイルに記述されている"import styles from 【ここ】"を参照して追記。無い場合はファイル末尾に<style></style>内で記述されている
 // // 慣れるまでは、スタイルのありかをyarn devから検証画面で見つける方がおすすめです
 const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
-  getPosts(NUMBER_OF_POSTS_PER_PAGE),
-  getRankedPosts(),
-  getAllTags(),
-  getNumberOfPages(),
+  getSubPosts(NUMBER_OF_POSTS_PER_PAGE),
+  getRankedSubPosts(),
+  getAllSubTags(),
+  getNumberOfSubPages(),
 ])
 ---
 
@@ -38,23 +42,27 @@ const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
         posts.map((post) => (
           <div class={styles.post} key={post.Slug}>
             <PostDate post={post} />
-            <PostTags post={post} />
-            <PostTitle post={post} />
+            <SubPostTags post={post} />
+            <SubPostTitle post={post} />
             <PostFeaturedImage post={post} />
             <PostExcerpt post={post} />
-            <ReadMoreLink post={post} />
+            <PostUrl post={post} />
+            <PostCheckbox post={post} />
+            <PostFormula post={post} />
+            <PostLastEditedTime post={post} />
+            <SubReadMoreLink post={post} />
           </div>
         ))
       )
     }
 
     <footer>
-      <Pagination currentPage={1} numberOfPages={numberOfPages} />
+      <SubPagination currentPage={1} numberOfPages={numberOfPages} />
     </footer>
   </div>
 
   <div slot="aside" class={styles.aside}>
-    <BlogPostsLink heading="Recommended" posts={rankedPosts} />
-    <BlogTagsLink heading="Categories" tags={tags} />
+    <BlogSubPostsLink heading="Recommended" posts={rankedPosts} />
+    <BlogSubTagsLink heading="Categories" tags={tags} />
   </div>
 </Layout>

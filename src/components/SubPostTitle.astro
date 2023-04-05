@@ -1,6 +1,6 @@
 ---
 import { Post } from '../lib/interfaces.ts'
-import { getStaticLink } from '../lib/blog-helpers.ts'
+import { getSubPostLink } from '../lib/blog-helpers.ts'
 
 export interface Props {
   post: Post
@@ -15,7 +15,7 @@ let title = post.Title
 <h3 class="post-title">
   {
     enableLink ? (
-      <a href={getStaticLink(post.Slug)}>
+      <a href={getSubPostLink(post.Slug)}>
         {post.Icon && post.Icon.Type === 'emoji' ? (
           <>
             <span>{post.Icon.Emoji}</span>
