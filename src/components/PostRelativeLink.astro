@@ -35,8 +35,38 @@ const { prevPost, nextPost } = Astro.props
     }
   </div>
   <div>
-    <a href={getNavLink('/')} class="text">↑Top</a>
+    <!-- <a href={getNavLink('/')} class="text">↑Top</a> -->
+    <a
+      href="#"
+      class="text"
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>↑Top</a
+    >
   </div>
+  <script>
+    export default {
+      mounted() {
+        // スクロールしたらページ上部へジャンプするボタンを表示する
+        window.addEventListener('scroll', function () {
+          const jumpBtn = document.getElementById('jumpBtn')
+          if (window.pageYOffset > 200) {
+            jumpBtn.classList.add('show')
+          } else {
+            jumpBtn.classList.remove('show')
+          }
+        })
+
+        // ページ上部へジャンプするボタンをクリックしたら、ページ上部へスクロールする
+        document
+          .getElementById('jumpBtn')
+          .addEventListener('click', function () {
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth',
+            })
+          })
+      },
+    }
+  </script>
 </div>
 
 <style>
