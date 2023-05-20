@@ -1,7 +1,7 @@
 # astro-notion-blog をサイト版に改造しました
+
 ![Screenshot 2023-03-22 at 18 29 29](https://user-images.githubusercontent.com/24947347/226860304-edacc25b-792e-4a17-aeb9-25aca18a8c84.png)
 ![Screenshot 2023-03-22 at 18 27 59](https://user-images.githubusercontent.com/24947347/226860340-a095de06-a8ae-4942-9b5b-b1e1687903e5.png)
-
 
 ## 【変更点】ブログ用のディレクトリにサイト用のディレクトリを追加
 
@@ -9,7 +9,6 @@
 - link to page ブロックを入れることでサイト内の遷移可
   - ただし、サイトページからブログページへの遷移はできないので要改造
 - 全ページ Notion で編集可
-
 
 ## 【注意点】骨組みのみを提案
 
@@ -26,7 +25,6 @@
 # サイト版テンプレート
 
 https://sparkling-cinnamon-3f9.notion.site/DB-DB-Page-7c44e29606454cfa9785eb84f3fb4055
-
 
 ## プロパティ追加のヒント
 
