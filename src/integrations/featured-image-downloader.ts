@@ -1,14 +1,17 @@
 import type { AstroIntegration } from 'astro'
-import { getAllPosts, downloadFile } from '../lib/notion/client'
+import { getAllPosts, getAllSubPosts, downloadFile } from '../lib/notion/client'
 
 export default (): AstroIntegration => ({
   name: 'featured-image-downloader',
   hooks: {
     'astro:build:start': async () => {
       const posts = await getAllPosts()
+      const subPosts = await getAllSubPosts() // 2つ目のDBからのデータを取得
+
+      const allPosts = [...posts, ...subPosts] // 全てのデータを一つの配列にまとめる
 
       await Promise.all(
-        posts.map((post) => {
+        allPosts.map((post) => {
           if (!post.FeaturedImage || !post.FeaturedImage.Url) {
             return Promise.resolve()
           }
