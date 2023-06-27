@@ -168,7 +168,10 @@ export async function getAllSubPosts(): Promise<SubPost[]> {
 
 export async function getPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
-  return allPosts.slice(0, pageSize)
+
+  return allPosts
+    .filter((post) => !post.Tags.some((tag) => tag.name === 'footer'))
+    .slice(0, pageSize)
 }
 
 export async function getSubPosts(pageSize = 10): Promise<SubPost[]> {
@@ -179,7 +182,9 @@ export async function getSubPosts(pageSize = 10): Promise<SubPost[]> {
 export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts()
   return allPosts
-    .filter((post) => !!post.Rank)
+    .filter(
+      (post) => !!post.Rank && !post.Tags.some((tag) => tag.name === 'footer')
+    )
     .sort((a, b) => {
       if (a.Rank > b.Rank) {
         return -1
@@ -236,7 +241,11 @@ export async function getPostsByTag(
 
   const allPosts = await getAllPosts()
   return allPosts
-    .filter((post) => post.Tags.find((tag) => tag.name === tagName))
+    .filter(
+      (post) =>
+        !post.Tags.some((tag) => tag.name === 'footer') &&
+        post.Tags.find((tag) => tag.name === tagName)
+    )
     .slice(0, pageSize)
 }
 
@@ -263,7 +272,9 @@ export async function getPostsByPage(page: number): Promise<Post[]> {
   const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
   const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE
 
-  return allPosts.slice(startIndex, endIndex)
+  return allPosts
+    .filter((post) => !post.Tags.some((tag) => tag.name === 'footer'))
+    .slice(startIndex, endIndex)
 }
 
 // page starts from 1 not 0
@@ -290,8 +301,10 @@ export async function getPostsByTagAndPage(
   }
 
   const allPosts = await getAllPosts()
-  const posts = allPosts.filter((post) =>
-    post.Tags.find((tag) => tag.name === tagName)
+  const posts = allPosts.filter(
+    (post) =>
+      !post.Tags.some((tag) => tag.name === 'footer') &&
+      post.Tags.find((tag) => tag.name === tagName)
   )
 
   const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE
@@ -322,9 +335,12 @@ export async function getPostsBySubTagAndSubPage(
 
 export async function getNumberOfPages(): Promise<number> {
   const allPosts = await getAllPosts()
+  const postsWithoutSpecifiedTag = allPosts.filter(
+    (post) => !post.Tags.some((tag) => tag.name === 'footer')
+  )
   return (
-    Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
-    (allPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
+    Math.floor(postsWithoutSpecifiedTag.length / NUMBER_OF_POSTS_PER_PAGE) +
+    (postsWithoutSpecifiedTag.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
   )
 }
 
@@ -338,7 +354,10 @@ export async function getNumberOfSubPages(): Promise<number> {
 
 export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   const allPosts = await getAllPosts()
-  const posts = allPosts.filter((post) =>
+  const postsWithoutSpecifiedTag = allPosts.filter(
+    (post) => !post.Tags.some((tag) => tag.name === 'footer')
+  )
+  const posts = postsWithoutSpecifiedTag.filter((post) =>
     post.Tags.find((tag) => tag.name === tagName)
   )
   return (
@@ -462,6 +481,7 @@ export async function getAllTags(): Promise<SelectProperty[]> {
 
   const tagNames: string[] = []
   return allPosts
+    .filter((post) => !post.Tags.some((tag) => tag.name === 'footer'))
     .flatMap((post) => post.Tags)
     .reduce((acc, tag) => {
       if (!tagNames.includes(tag.name)) {
