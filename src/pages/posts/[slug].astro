@@ -57,6 +57,7 @@ const [
 const allPosts = allPostsNoFilter.filter(
   (post) => !post.Tags.some((tag) => tag.name === 'footer')
 )
+const hasFooter = post.Tags.some((tag) => tag.name === 'footer')
 
 const fileAtacchedBlocks = extractTargetBlocks('image', blocks)
   .concat(extractTargetBlocks('file', blocks))
@@ -118,7 +119,7 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
       <PostTags post={post} />
 
       <footer>
-        <PostRelativeLink prevPost={prevPost} nextPost={nextPost} />
+        {!hasFooter && <PostRelativeLink prevPost={prevPost} nextPost={nextPost} />}
       </footer>
     </div>
   </div>
