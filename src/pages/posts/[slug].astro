@@ -40,7 +40,7 @@ if (!post) {
 
 const [
   blocks,
-  allPostsNoFinter,
+  allPostsNoFilter,
   rankedPosts,
   recentPosts,
   tags,
@@ -54,7 +54,7 @@ const [
   getPostsByTag(post.Tags[0]?.name, 6),
 ])
 
-const allPosts = allPostsNoFinter.filter(
+const allPosts = allPostsNoFilter.filter(
   (post) => !post.Tags.some((tag) => tag.name === 'footer')
 )
 
