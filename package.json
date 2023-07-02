@@ -23,7 +23,7 @@
     "@supercharge/promise-pool": "^2.4.0",
     "astro": "^2.5.6",
     "katex": "^0.16.7",
-    "mermaid": "^10.1.0",
+    "mermaid": "^10.2.4",
     "metascraper": "^5.34.4",
     "metascraper-description": "^5.34.4",
     "metascraper-image": "^5.34.4",
