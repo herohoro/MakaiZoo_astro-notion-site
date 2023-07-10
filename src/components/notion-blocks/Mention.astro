@@ -1,7 +1,7 @@
 ---
-import { Post } from '../../lib/interfaces.ts'
-import { getPostByPageId } from '../../lib/notion/client'
-import { getPostLink } from '../../lib/blog-helpers.ts'
+import { Post,SubPost } from '../../lib/interfaces.ts'
+import { getPostByPageId,getSubPostByPageId } from '../../lib/notion/client'
+import { getPostLink,getSubPostLink } from '../../lib/blog-helpers.ts'
 import '../../styles/notion-color.css'
 import arrow from '../../images/icon-arrow-link.svg'
 
@@ -12,38 +12,57 @@ export interface Props {
 const { pageId } = Astro.props
 
 let post: Post = null
+let subPost: SubPost = null
 if (pageId) {
-  post = await getPostByPageId(pageId)
+    post = await getPostByPageId(pageId)
+    if (!post) {
+    subPost = await getSubPostByPageId(pageId)
+  }
 }
 ---
 
-{
-  post ? (
-    <a href={getPostLink(post.Slug)} class="link">
-      <>
-        <span class="icon">
-          {post.Icon && post.Icon.Type === 'emoji' ? (
-            post.Icon.Emoji
-          ) : post.Icon && post.Icon.Type === 'external' ? (
-            <img src={post.Icon.Url} class="notion-icon" />
-          ) : (
-            '📄'
-          )}
-          <img src={arrow} class="icon-link" alt="" />
-        </span>
-        <span class="text">{post.Title}</span>
-      </>
-    </a>
-  ) : (
-    <a class="link">
+{post ? (
+  <a href={getPostLink(post.Slug)} class="link">
+    <>
       <span class="icon">
-        🚫
+        {post.Icon && post.Icon.Type === 'emoji' ? (
+          post.Icon.Emoji
+        ) : post.Icon && post.Icon.Type === 'external' ? (
+          <img src={post.Icon.Url} class="notion-icon" />
+        ) : (
+          '📄'
+        )}
         <img src={arrow} class="icon-link" alt="" />
       </span>
-      <span class="text not-found">Post not found</span>
-    </a>
-  )
-}
+      <span class="text">{post.Title}</span>
+    </>
+  </a>
+) : subPost ? (
+  <a href={getSubPostLink(subPost.Slug)} class="link">
+    <>
+      <span class="icon">
+        {subPost.Icon && subPost.Icon.Type === 'emoji' ? (
+          subPost.Icon.Emoji
+        ) : subPost.Icon && subPost.Icon.Type === 'external' ? (
+          <img src={subPost.Icon.Url} class="notion-icon" />
+        ) : (
+          '📄'
+        )}
+        <img src={arrow} class="icon-link" alt="" />
+      </span>
+      <span class="text">{subPost.Title}</span>
+    </>
+  </a>
+) : (
+  <a class="link">
+    <span class="icon">
+      🚫
+      <img src={arrow} class="icon-link" alt="" />
+    </span>
+    <span class="text not-found">Post not found</span>
+  </a>
+)}
+
 
 <style>
   a.link {
